@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PathFinder</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: hwb(266 5% 83%);
+            /* margin: 0; */
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PathFinder</h1>
+        <form id="pathForm">
+            <label for="start">Start Node:</label>
+            <input type="text" id="start" name="start" required>
+            <br>
+            <label for="end">End Node:</label>
+            <input type="text" id="end" name="end" required>
+            <br>
+            <button type="submit">Find Shortest Path</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Add your JavaScript code here
+        const form = document.getElementById('pathForm');
+        const resultDiv = document.getElementById('result');
+
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(form);
+            const jsonData = {};
+            formData.forEach((value, key) => {
+                jsonData[key] = value;
+            });
+
+            try {
+                const response = await fetch('/shortest-path', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(jsonData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                resultDiv.textContent = `Shortest Distance: ${data.shortest_distance}`;
+            } catch (error) {
+                console.error('Error:', error);
+                resultDiv.textContent = 'An error occurred. Please try again later.';
+            }
+        });
+    </script>
+</body>
+</html>
